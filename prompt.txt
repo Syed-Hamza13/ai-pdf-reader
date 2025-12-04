@@ -1,0 +1,12 @@
+HOW IT DEVELOPED 
+hamara project  ko developkarne ke liye hamne isse kuch phasses me divide  kar diya hai 
+front end jo ki react pe banega 
+
+ollama phi - 3 model setup testing it using postman and api calls 
+connect it to backend files and testing at console level 
+
+fir ragflow ko setup karna docker compose ki help se aur isse bhi setup karne ke baad postman aur api calls se test karn aaur fir backend files se connect karke files ko bhejna ragflow me aur fir isse backend files me hi ollama se connect karna  aur console level pe test karna 
+
+aur ye sab testt ho janae ke baad isse backend ke throug frontend se connecct karna aur jo files adn api call postman a api calls se kar rahe the usse fron endt se bhejna aur response ko bhi frontend pe dikhana  
+ 
+kuch esa hoga iska aage ka ye setup 

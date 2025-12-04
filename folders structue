@@ -1,0 +1,93 @@
+ai-pdf-reader/
+│
+├── client/                     # React Frontend (SPA)
+│   ├── public/
+│   │   └── index.html
+│   │
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── FileUpload.jsx
+│   │   │   ├── ChatBox.jsx
+│   │   │   ├── MessageBubble.jsx
+│   │   │   ├── PDFInfoCard.jsx
+│   │   │   └── Loader.jsx
+│   │   │
+│   │   ├── pages/
+│   │   │   └── App.jsx        # Single page UI
+│   │   │
+│   │   ├── hooks/
+│   │   │   └── useChat.js
+│   │   │
+│   │   ├── utils/
+│   │   │   └── helpers.js
+│   │   │
+│   │   ├── styles/
+│   │   │   └── global.css
+│   │   │
+│   │   └── index.js
+│   │
+│   └── package.json
+│
+├── server/                     # Node.js + Express backend
+│   ├── routes/
+│   │   ├── upload.js          # PDF upload + text extraction
+│   │   ├── embed.js           # Generate embeddings via Ollama
+│   │   ├── query.js           # RAG pipeline -> LLM answer
+│   │   └── health.js          # Test server
+│   │
+│   ├── lib/
+│   │   ├── pdfParser.js       # PDF to text conversion
+│   │   ├── chunker.js         # Split text into chunks
+│   │   ├── embeddings.js      # Call Ollama
+│   │   ├── rag.js             # Retrieve + combine (RAG logic)
+│   │   ├── db.js              # PostgreSQL + pgvector connection
+│   │   └── utils.js           # Helpers
+│   │
+│   ├── models/                # SQL queries or ORM (optional)
+│   │   └── chunksModel.js
+│   │
+│   ├── server.js              # Main Express server
+│   │
+│   └── package.json
+│
+├── .env                        # DB connection, Ollama URL
+├── README.md
+└── package.json                # For workspace-level config (optional)
+
+
+|-- .env
+|-- README.md
+|-- server
+  |-- server.js
+  |-- lib
+    |-- chunker.js
+    |-- db.js
+    |-- pdfParser.js
+    |-- rag.js
+    |-- util.js
+  |-- models
+    |-- chunkModel.js
+  |-- routes
+    |-- embed.js
+    |-- query.js
+    |-- upload.js
+|-- client
+  |-- .env
+  |-- .gitignore
+  |-- package-lock.json
+  |-- package.json
+  |-- README.md
+  |-- public
+    |-- index.html
+  |-- src
+    |-- index.js
+    |-- hooks
+      |-- useChat.jsx
+    |-- pages
+      |-- App.jsx
+    |-- components
+    |-- styles
+      |-- global.css
+    |-- utils
+      |-- helper.js
+  
