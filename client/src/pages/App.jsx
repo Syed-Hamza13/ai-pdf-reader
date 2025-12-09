@@ -14,28 +14,36 @@ function App() {
   const handleFileUploaded = (response) => {
     console.log("upload response", response);
     setPdfFileInfo(response.file || null);
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         sender: "system",
-        text: `✓ PDF uploaded successfully: ${response.file?.originalname || "unknown"}`
-      }
+        text: `✓ PDF uploaded successfully: ${
+          response.file?.originalname || "unknown"
+        }`,
+      },
     ]);
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!message.trim()) return;
 
-    setMessages((prev) => [...prev, { sender: "user", text: message }]);
-
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", text: "AI response will appear here..." }
-      ]);
-    }, 400);
-
+    const userMsg = message;
+    setMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
     setMessage("");
+
+    const res = await fetch("http://localhost:5000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        datasetId: pdfFileInfo.datasetId,
+        question: userMsg,
+      }),
+    });
+
+    const data = await res.json();
+
+    setMessages((prev) => [...prev, { sender: "ai", text: data.answer }]);
   };
 
   return (
@@ -60,10 +68,13 @@ function App() {
         <ChatBox messages={messages} />
       </div>
 
-      <ChatInput message={message} setMessage={setMessage} onSend={handleSend} />
+      <ChatInput
+        message={message}
+        setMessage={setMessage}
+        onSend={handleSend}
+      />
     </div>
   );
 }
 
 export default App;
-
