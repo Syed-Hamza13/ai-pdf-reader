@@ -14,12 +14,18 @@ if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) =>
-    cb(null, Date.now() + path.extname(file.originalname)),
+  filename: (req, file, cb) => {
+    const cleanName = file.originalname.replace(/\s+/g, "_");
+    cb(null, cleanName);
+  },
 });
+
 
 const upload = multer({ storage });
 
+// ======================
+// PDF UPLOAD + CHUNKING
+// ======================
 router.post("/pdf", upload.single("pdf"), async (req, res) => {
   try {
     const datasetId = process.env.RAGFLOW_DATASET_ID;
@@ -31,25 +37,32 @@ router.post("/pdf", upload.single("pdf"), async (req, res) => {
     const formData = new FormData();
     formData.append("file", fs.createReadStream(req.file.path));
 
-    // ✅ STEP 1 — Upload document
+    // 1️⃣ Upload document
     const uploadRes = await axios.post(uploadURL, formData, {
       headers: {
         ...formData.getHeaders(),
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
-
-    const documentId = uploadRes.data.data.document_id;
-
-    // ✅ STEP 2 — Create chunks
-    await axios.post(chunkURL, {
-      document_ids: [documentId],
-    }, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
+        Authorization: `Bearer ${apiKey}`
       }
     });
+
+    // Correct document id extraction
+    const documentId = uploadRes.data.data[0].id;
+
+    console.log("📄 Uploaded Doc ID:", documentId);
+
+    // 2️⃣ Chunk creation
+    const chunkRes = await axios.post(
+      chunkURL,
+      { document_ids: [documentId] },
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    console.log("🧩 Chunk Response:", chunkRes.data);
 
     res.json({
       message: "PDF uploaded & chunked successfully",
@@ -61,7 +74,7 @@ router.post("/pdf", upload.single("pdf"), async (req, res) => {
     });
 
   } catch (err) {
-    console.error("RAG upload failed:", err.response?.data || err.message);
+    console.error("❌ RAG upload failed:", err.response?.data || err.message);
     res.status(500).json({ error: "RAG upload failed" });
   }
 });
