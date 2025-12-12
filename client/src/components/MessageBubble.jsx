@@ -1,4 +1,3 @@
-
 // ============================================
 // client/src/components/MessageBubble.jsx
 // ============================================
@@ -13,11 +12,13 @@ function MessageBubble({ sender, text }) {
             </svg>
           </div>
         )}
-        <div className="message-text">{text}</div>
+        <div
+          className="message-text"
+          dangerouslySetInnerHTML={{ __html: text }}
+        />
       </div>
     </div>
   );
 }
 
 export default MessageBubble;
-

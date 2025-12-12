@@ -6,6 +6,9 @@ import FileUpload from "../components/FileUpload";
 import ChatInput from "../components/ChatInput";
 import ChatBox from "../components/ChatBox";
 
+import { marked } from "marked";
+marked.setOptions({ breaks: true });
+
 function App() {
   const [pdfFileInfo, setPdfFileInfo] = useState(null);
   const [message, setMessage] = useState("");
@@ -26,24 +29,41 @@ function App() {
   };
 
   const handleSend = async () => {
-    if (!message.trim()) return;
+    if (!pdfFileInfo) {
+      alert("Please upload a PDF first!");
+      return;
+    }
 
-    const userMsg = message;
+    const userMsg = message.trim();
+    if (!userMsg) return;
+
     setMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
     setMessage("");
 
-    const res = await fetch("http://localhost:5000/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        datasetId: pdfFileInfo.datasetId,
-        question: userMsg,
-      }),
-    });
+    // Add placeholder AI message
+    setMessages((prev) => [...prev, { sender: "ai", text: "..." }]);
 
-    const data = await res.json();
+    try {
+      const res = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          datasetId: pdfFileInfo.datasetId,
+          question: userMsg,
+        }),
+      });
 
-    setMessages((prev) => [...prev, { sender: "ai", text: data.answer }]);
+      const data = await res.json();
+      const html = marked.parse(data.answer || "No answer.");
+
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { sender: "ai", text: html };
+        return updated;
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -72,6 +92,7 @@ function App() {
         message={message}
         setMessage={setMessage}
         onSend={handleSend}
+        disabled={!pdfFileInfo}
       />
     </div>
   );
