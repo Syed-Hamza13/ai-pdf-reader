@@ -49,10 +49,11 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           datasetId: pdfFileInfo.datasetId,
+          documentId: pdfFileInfo.documentId,
           question: userMsg,
         }),
       });
-
+      console.log("user question ", res.question)
       const data = await res.json();
       const html = marked.parse(data.answer || "No answer.");
 
