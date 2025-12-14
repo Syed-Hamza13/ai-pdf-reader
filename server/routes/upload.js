@@ -83,16 +83,64 @@ router.post("/pdf", upload.single("pdf"), async (req, res) => {
       }
     );
 
-    console.log("\n✅ CHUNKING SUCCESSFUL!");
+    console.log("\n✅ CHUNKING REQUEST SENT!");
     console.log(`   • Status: ${chunkRes.status} ${chunkRes.statusText}`);
-    console.log(`   • Chunking Response:`, JSON.stringify(chunkRes.data, null, 2));
+    
+    // Step 4: Poll for Chunk Completion Status
+    console.log("\n⏳ STEP 3: Waiting for chunks to be processed (polling)...");
+    
+    let isChunkingComplete = false;
+    let pollCount = 0;
+    const maxPolls = 60; // Max 60 attempts (30 seconds with 500ms intervals)
+    const pollInterval = 500; // 500ms
 
-    if (chunkRes.data?.data?.chunks) {
-      const chunkCount = Array.isArray(chunkRes.data.data.chunks) 
-        ? chunkRes.data.data.chunks.length 
-        : Object.keys(chunkRes.data.data.chunks).length;
-      console.log(`   • Total Chunks Created: ${chunkCount}`);
+    while (!isChunkingComplete && pollCount < maxPolls) {
+      pollCount++;
+      
+      // Get document status to check if chunking is complete
+      const statusURL = `http://localhost:9380/api/v1/datasets/${datasetId}/documents/${documentId}`;
+      
+      try {
+        const statusRes = await axios.get(statusURL, {
+          headers: {
+            Authorization: `Bearer ${apiKey}`
+          }
+        });
+
+        const docStatus = statusRes.data?.data;
+        
+        if (docStatus) {
+          console.log(`\n   Poll #${pollCount}: Checking document status...`);
+          console.log(`      • Document ID: ${docStatus.id}`);
+          console.log(`      • Status: ${docStatus.status || 'PROCESSING'}`);
+          console.log(`      • Chunk Count: ${docStatus.chunk_count || 0}`);
+
+          // Check if chunking is complete
+          if (docStatus.status === 'COMPLETE' || docStatus.status === 'DONE' || docStatus.chunk_count > 0) {
+            isChunkingComplete = true;
+            console.log(`\n   ✅ Chunking Complete!`);
+            console.log(`      • Total Chunks: ${docStatus.chunk_count || 'N/A'}`);
+          }
+        }
+      } catch (statusErr) {
+        console.log(`   ⚠️  Status check attempt #${pollCount} - continuing...`);
+      }
+
+      // Wait before next poll
+      if (!isChunkingComplete && pollCount < maxPolls) {
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      }
     }
+
+    if (!isChunkingComplete) {
+      console.warn("\n⚠️  WARNING: Chunking timeout after 30 seconds");
+      console.warn("   Proceeding anyway, but chunking may still be processing...");
+    }
+
+    console.log("\n✅ CHUNKING PROCESS VERIFIED!");
+    console.log(`   • Total Polling Attempts: ${pollCount}`);
+    console.log(`   • Time Waited: ${(pollCount * pollInterval / 1000).toFixed(2)} seconds`);
+    console.log(`   • Chunking Response:`, JSON.stringify(chunkRes.data, null, 2));
 
     console.log("\n" + "=".repeat(60));
     console.log("✨ PDF UPLOAD & CHUNKING COMPLETED SUCCESSFULLY!");

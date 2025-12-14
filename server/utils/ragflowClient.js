@@ -67,14 +67,14 @@ export async function retrieveChunks(datasetId, question, documentId) {
       console.log(`      ├─ ID: ${chunk.id}`);
       console.log(`      ├─ Size: ${chunk.content?.length || 0} characters`);
       console.log(`      └─ Preview: ${chunk.content?.substring(0, 80)}...`);
-    });
-
+    });   
+   
     console.log("\n" + "=".repeat(60));
     console.log("✨ CHUNK RETRIEVAL COMPLETED");
     console.log("=".repeat(60) + "\n");
-
+      
     return chunks;
-    
+       
   } catch (err) {
     console.error("\n" + "=".repeat(60));
     console.error("❌ CHUNK RETRIEVAL FAILED");
