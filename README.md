@@ -1,85 +1,371 @@
-<div align="center">
-  <h1><img src="https://gocartshop.in/favicon.ico" width="20" height="20" alt="GoCart Favicon">
-   GoCart</h1>
-  <p>
-    An open-source multi-vendor e-commerce platform built with Next.js and Tailwind CSS.
-  </p>
-  <p>
-    <a href="https://github.com/GreatStackDev/goCart/blob/main/LICENSE.md"><img src="https://img.shields.io/github/license/GreatStackDev/goCart?style=for-the-badge" alt="License"></a>
-    <a href="https://github.com/GreatStackDev/goCart/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome"></a>
-    <a href="https://github.com/GreatStackDev/goCart/issues"><img src="https://img.shields.io/github/issues/GreatStackDev/goCart?style=for-the-badge" alt="GitHub issues"></a>
-  </p>
-</div>
+# 📘 AI PDF Reader with Document-Specific RAG
+
+An AI-powered PDF Question Answering system built using **React.js**, **Node.js**, **RAGFlow**, and **Ollama**.  
+This application allows users to upload PDFs and ask questions about the uploaded document using Retrieval-Augmented Generation (RAG).
+
+The system performs **document-specific semantic retrieval**, ensuring answers are generated only from the uploaded PDF instead of the entire dataset.
 
 ---
 
-## 📖 Table of Contents
+# 🚀 Features
 
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#-tech-stack)
-- [🚀 Getting Started](#-getting-started)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
+- 📄 Upload PDF files
+- 🤖 Ask questions about uploaded PDFs
+- 🧠 AI-generated contextual answers
+- 🔍 Semantic chunk retrieval using RAGFlow
+- 🎯 Document-specific retrieval using `document_id`
+- ⚡ Local LLM inference using Ollama
+- 📝 Markdown-formatted AI responses
+- 📦 Full-stack architecture
+- 🎨 Modern animated chat UI
+- 📡 Real-time upload progress
 
 ---
 
-## Features
+# 🧠 How It Works
 
-- **Multi-Vendor Architecture:** Allows multiple vendors to register, manage their own products, and sell on a single platform.
-- **Customer-Facing Storefront:** A beautiful and responsive user interface for customers to browse and purchase products.
-- **Vendor Dashboards:** Dedicated dashboards for vendors to manage products, view sales analytics, and track orders.
-- **Admin Panel:** A comprehensive dashboard for platform administrators to oversee vendors, products, and commissions.
+## Step 1 — Upload PDF
+User uploads a PDF file from the frontend.
 
-## 🛠️ Tech Stack <a name="-tech-stack"></a>
+## Step 2 — RAGFlow Processing
+Backend:
+- uploads the PDF to RAGFlow
+- generates chunks
+- indexes semantic embeddings
+- receives:
+  - `datasetId`
+  - `documentId`
 
-- **Framework:** Next.js
-- **Styling:** Tailwind CSS
-- **UI Components:** Lucide React for icons
-- **State Management:** Redux Toolkit
+---
 
-## 🚀 Getting Started <a name="-getting-started"></a>
+## Step 3 — Ask Questions
+User asks questions related to the uploaded PDF.
 
-First, install the dependencies. We recommend using `npm` for this project.
+---
+
+## Step 4 — Document-Specific Retrieval
+The backend retrieves only relevant chunks from the uploaded document using:
+
+```json
+{
+  "dataset_ids": ["DATASET_ID"],
+  "document_ids": ["DOCUMENT_ID"]
+}
+```
+
+This prevents retrieval from unrelated PDFs.
+
+---
+
+## Step 5 — AI Response Generation
+
+Retrieved chunks are sent to Ollama (`llama3.2`) with a custom prompt.
+
+The LLM generates:
+- structured
+- markdown-formatted
+- context-aware answers
+
+---
+
+# 🏗️ Architecture
+
+```text
+Frontend (React)
+       ↓
+Express.js Backend
+       ↓
+RAGFlow Retrieval API
+       ↓
+Relevant PDF Chunks
+       ↓
+Ollama (Llama 3.2)
+       ↓
+Final AI Response
+```
+
+---
+
+# 🛠️ Tech Stack
+
+## Frontend
+- React.js
+- JavaScript
+- CSS3
+- Marked.js
+
+---
+
+## Backend
+- Node.js
+- Express.js
+- Multer
+- Axios
+- FormData
+
+---
+
+## AI / RAG Stack
+- RAGFlow
+- Ollama
+- Llama 3.2
+- Semantic Search
+- Vector Retrieval
+
+---
+
+## Infrastructure
+- Docker
+- Elasticsearch
+- Infinity Vector Database
+
+---
+
+# 📂 Project Structure
 
 ```bash
+client/
+│
+├── public/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── hooks/
+│   ├── styles/
+│   └── utils/
+│
+└── .env
+
+
+server/
+│
+├── routes/
+├── utils/
+├── uploads/
+└── .env
+```
+
+---
+
+# ⚙️ Installation
+
+## 1️⃣ Clone Repository
+
+```bash
+git clone <your-repo-url>
+cd ai-pdf-reader
+```
+
+---
+
+# 📦 Backend Setup
+
+## Install Dependencies
+
+```bash
+cd server
 npm install
 ```
 
-Then, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Configure Environment Variables
+
+Create `.env`
+
+```env
+RAGFLOW_BASE_URL=http://localhost:9380
+RAGFLOW_API_KEY=your_ragflow_api_key
+RAGFLOW_DATASET_ID=your_dataset_id
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/(public)/page.js`. The page auto-updates as you edit the file.
+## Start Backend
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Outfit](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm start
+```
+
+Backend runs on:
+
+```bash
+http://localhost:5000
+```
 
 ---
 
-## 🤝 Contributing <a name="-contributing"></a>
+# 🎨 Frontend Setup
 
-We welcome contributions! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for more details on how to get started.
+## Install Dependencies
+
+```bash
+cd client
+npm install
+```
 
 ---
 
-## 📜 License <a name="-license"></a>
+## Create `.env`
 
-This project is licensed under the MIT License. See the [LICENSE.md](./LICENSE.md) file for details.
+```env
+PORT=7576
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Start Frontend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Frontend runs on:
+
+```bash
+http://localhost:7576
+```
+
+---
+
+# 🤖 Ollama Setup
+
+Install Ollama:
+
+```bash
+https://ollama.com
+```
+
+Pull model:
+
+```bash
+ollama pull llama3.2
+```
+
+Run Ollama server:
+
+```bash
+ollama serve
+```
+
+---
+
+# 🐳 RAGFlow Setup
+
+Start RAGFlow using Docker:
+
+```bash
+docker compose up -d
+```
+
+Ensure these services are running:
+
+- Elasticsearch
+- Infinity
+- MySQL
+- Redis
+- MinIO
+- RAGFlow Server
+
+---
+
+# 🔥 API Workflow
+
+## Upload PDF
+
+```http
+POST /upload/pdf
+```
+
+Returns:
+
+```json
+{
+  "datasetId": "...",
+  "documentId": "...",
+  "filename": "..."
+}
+```
+
+---
+
+## Ask Question
+
+```http
+POST /chat
+```
+
+Request:
+
+```json
+{
+  "datasetId": "...",
+  "documentId": "...",
+  "question": "What is internet?"
+}
+```
+
+---
+
+# 🧠 Core Concepts Used
+
+- Retrieval-Augmented Generation (RAG)
+- Semantic Search
+- Vector Embeddings
+- Chunk-Based Retrieval
+- Prompt Engineering
+- Document-Specific Filtering
+- Local LLM Inference
+- REST APIs
+
+---
+
+# 🎯 Why Document-Specific Retrieval Matters
+
+Most RAG systems search across the entire dataset.
+
+This project improves retrieval accuracy by filtering results using:
+- `dataset_id`
+- `document_id`
+
+Benefits:
+- higher precision
+- reduced hallucinations
+- no cross-document contamination
+- more reliable AI answers
+
+---
+
+# 📸 Future Improvements
+
+- Multi-PDF Chat
+- PDF Switching
+- Streaming AI Responses
+- Page Number Citations
+- OCR Support
+- Authentication System
+- Chat History
+- Highlight Referenced Chunks
+
+---
+
+# 📌 Resume Highlights
+
+- Built a full-stack AI-powered PDF question-answering system
+- Implemented document-specific semantic retrieval using RAGFlow
+- Integrated Ollama Llama 3.2 for local AI inference
+- Designed chunk-based vector retrieval architecture
+- Engineered prompt system to reduce hallucinations
+- Developed modern React-based chat interface
+
+---
+
+# 👨‍💻 Author
+
+Developed by **Syed HamA**
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
